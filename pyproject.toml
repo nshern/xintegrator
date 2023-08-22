@@ -9,6 +9,8 @@ packages = [{include = "x_integrator"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 requests = "^2.31.0"
+pandas = "^2.0.3"
+plotly = "^5.16.1"
 
 
 [tool.poetry.group.dev.dependencies]
