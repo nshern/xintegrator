@@ -40,7 +40,16 @@ class Integration:
         )
 
         # TODO: Make some kind of try-except here,
-        # TODO:  to check if the user actually exists
+        # TODO: to check if the user actually exists
 
         id = json_response["data"][0]["id"]
         return id
+
+    # TODO: Allow pagination
+    def _get_user_timeline(self):
+        url = f"https://api.twitter.com/2/users/{self.user_id}/tweets"
+        json_response = self._connect_to_endpoint(
+            url=url, user_agent="v2UserTweetsPython"
+        )
+
+        return json_response
