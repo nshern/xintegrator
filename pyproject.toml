@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "x_integrator"
+name = "xintegrator"
 version = "0.1.0"
 description = "Python wrapper for itnegrating with X API"
 authors = ["Niklas Alexander Shern <nshern@protonmail.com>"]
