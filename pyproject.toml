@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Python wrapper for itnegrating with X API"
 authors = ["Niklas Alexander Shern <nshern@protonmail.com>"]
 readme = "README.md"
-packages = [{include = "x_integrator"}]
+packages = [{include = "xintegrator"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
