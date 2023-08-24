@@ -74,7 +74,7 @@ class Integration:
         return json_response
 
     def get_tweet_table(self, max_results, **kwargs):
-        json_response = self._get_user_timeline(max_results=10)
+        json_response = self._get_user_timeline(max_results=max_results)
 
         created_at = []
         text = []
@@ -94,7 +94,9 @@ class Integration:
                 like_count.append(i["public_metrics"]["like_count"])
                 quote_count.append(i["public_metrics"]["quote_count"])
                 bookmark_count.append(i["public_metrics"]["bookmark_count"])
-                impression_count.append(i["public_metrics"]["impression_count"])
+                impression_count.append(
+                    i["public_metrics"]["impression_count"]
+                )
 
         df = pd.DataFrame()
         df["created_at"] = created_at
@@ -143,7 +145,9 @@ class Integration:
         )
 
         # Add a trendline
-        z = np.polyfit(range(len(df["Publiceringsdato"])), df["Popularitet"], 1)
+        z = np.polyfit(
+            range(len(df["Publiceringsdato"])), df["Popularitet"], 1
+        )
         p = np.poly1d(z)
         fig.add_trace(
             go.Scatter(
