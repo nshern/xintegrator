@@ -31,25 +31,16 @@ class Integration:
         )
         if response.status_code != 200:
             raise Exception(
-                "Request returned an error: {} {}".format(
-                    response.status_code, response.text
-                )
+                f"Request returned an error: {response.status_code}"
+                f"{response.text}"
             )
         return response.json()
 
-    def get_params(self, max_results, **kwargs):
-        next_token = kwargs.get("next_token")
-        if next_token:
-            return {
-                "max_results": max_results,
-                "tweet.fields": "created_at,public_metrics",
-                "pagination_token": next_token,
-            }
-        else:
-            return {
-                "max_results": max_results,
-                "tweet.fields": "created_at,public_metrics",
-            }
+    def get_params(self, max_results):
+        return {
+            "max_results": max_results,
+            "tweet.fields": "created_at,public_metrics",
+        }
 
     def _get_id_from_username(self):
         url = f"https://api.twitter.com/2/users/by?usernames={self.username}"
@@ -170,14 +161,3 @@ class Integration:
         )
 
         return fig
-
-
-if __name__ == "__main__":
-    foo = Integration("rihanna")
-    # timeline = foo._get_user_timeline(max_results=10)
-    # print(timeline)
-    foo.get_tweet_table(5)
-
-    fig = foo.visualize_popularity(foo.tweet_table)
-
-    print(type(fig))
