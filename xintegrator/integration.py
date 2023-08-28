@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
+import json
 
 
 class Integration:
@@ -34,12 +35,13 @@ class Integration:
                 f"Request returned an error: {response.status_code}"
                 f"{response.text}"
             )
+
         return response.json()
 
     def get_params(self, max_results):
         return {
             "max_results": max_results,
-            "tweet.fields": "created_at,public_metrics",
+            "tweet.fields": "created_at,public_metrics,author_id",
         }
 
     def _get_id_from_username(self):
@@ -64,8 +66,31 @@ class Integration:
 
         return json_response
 
-    def get_tweet_table(self, max_results, **kwargs):
-        json_response = self._get_user_timeline(max_results=max_results)
+    # TODO: Allow pagination
+    def _get_user_mentions_timeline(self, max_results):
+        url = f"https://api.twitter.com/2/users/{self.user_id}/mentions"
+        params = self.get_params(max_results)
+        json_response = self._connect_to_endpoint(
+            url=url, user_agent="v2UserMentionsPython", params=params
+        )
+
+        return json_response
+
+    def get_tweet_table(self, max_results, type: str):
+        if type not in ["user", "mentions"]:
+            raise ValueError("Type must be 'user' or 'mentions'")
+
+        if type == "user":
+            json_response = self._get_user_timeline(max_results=max_results)
+
+        if type == "mentions":
+            json_response = self._get_user_mentions_timeline(
+                max_results=max_results
+            )
+
+            # FIX: TEMPORARY
+            with open("pump.json", "w") as f:
+                f.write(json.dumps(json_response))
 
         created_at = []
         text = []
@@ -75,9 +100,11 @@ class Integration:
         quote_count = []
         bookmark_count = []
         impression_count = []
+        author_id = []
 
         if isinstance(json_response, dict):
             for i in json_response["data"]:
+                author_id.append(i["author_id"])
                 created_at.append(i["created_at"])
                 text.append(i["text"])
                 retweet_count.append(i["public_metrics"]["retweet_count"])
@@ -90,6 +117,7 @@ class Integration:
                 )
 
         df = pd.DataFrame()
+        df["author_id"] = author_id
         df["created_at"] = created_at
         df["Publiceringsdato"] = df["created_at"].str.split("T").str[0]
         df["Tekst"] = text
@@ -161,3 +189,15 @@ class Integration:
         )
 
         return fig
+
+
+if __name__ == "__main__":
+    riri = Integration("rihanna")
+    # mentions = riri._get_user_mentions_timeline(5)
+    riri.get_tweet_table(5, "mentions")
+    print(riri.tweet_table)
+
+    riri.tweet_table.to_csv("foo.csv")
+
+    riri.get_tweet_table(5, "user")
+    print(riri.tweet_table)
