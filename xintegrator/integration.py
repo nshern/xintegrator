@@ -38,7 +38,7 @@ class Integration:
 
         return response.json()
 
-    def get_params(self, max_results):
+    def _get_params(self, max_results):
         return {
             "max_results": max_results,
             "tweet.fields": "created_at,public_metrics,author_id",
@@ -59,7 +59,7 @@ class Integration:
     # TODO: Allow pagination
     def _get_user_timeline(self, max_results):
         url = f"https://api.twitter.com/2/users/{self.user_id}/tweets"
-        params = self.get_params(max_results)
+        params = self._get_params(max_results)
         json_response = self._connect_to_endpoint(
             url=url, user_agent="v2UserTweetsPython", params=params
         )
@@ -69,7 +69,7 @@ class Integration:
     # TODO: Allow pagination
     def _get_user_mentions_timeline(self, max_results):
         url = f"https://api.twitter.com/2/users/{self.user_id}/mentions"
-        params = self.get_params(max_results)
+        params = self._get_params(max_results)
         json_response = self._connect_to_endpoint(
             url=url, user_agent="v2UserMentionsPython", params=params
         )
