@@ -67,7 +67,7 @@ class Integration:
         return json_response
 
     # TODO: Allow pagination
-    def _get_user_mentions_timeline(self, max_results):
+    def _get_mentions_timeline(self, max_results):
         url = f"https://api.twitter.com/2/users/{self.user_id}/mentions"
         params = self._get_params(max_results)
         json_response = self._connect_to_endpoint(
@@ -77,6 +77,7 @@ class Integration:
         return json_response
 
     def get_tweet_table(self, max_results, type: str):
+        # TODO: Use enum https://realpython.com/python-enum/
         if type not in ["user", "mentions"]:
             raise ValueError("Type must be 'user' or 'mentions'")
 
@@ -84,13 +85,9 @@ class Integration:
             json_response = self._get_user_timeline(max_results=max_results)
 
         if type == "mentions":
-            json_response = self._get_user_mentions_timeline(
+            json_response = self._get_mentions_timeline(
                 max_results=max_results
             )
-
-            # FIX: TEMPORARY
-            with open("pump.json", "w") as f:
-                f.write(json.dumps(json_response))
 
         created_at = []
         text = []
@@ -135,8 +132,7 @@ class Integration:
             + df["Bogmarkeringer"]
         )
 
-        self.tweet_table = df
-        return json_response
+        return df
 
     def visualize_popularity(self, df):
         df["Publiceringsdato"] = df["Publiceringsdato"].astype(str)
@@ -193,11 +189,7 @@ class Integration:
 
 if __name__ == "__main__":
     riri = Integration("rihanna")
-    # mentions = riri._get_user_mentions_timeline(5)
-    riri.get_tweet_table(5, "mentions")
-    print(riri.tweet_table)
 
-    riri.tweet_table.to_csv("foo.csv")
+    table = riri.get_tweet_table(5, "user")
 
-    riri.get_tweet_table(5, "user")
-    print(riri.tweet_table)
+    print(table)
