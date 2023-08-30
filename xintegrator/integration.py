@@ -88,6 +88,7 @@ class Integration:
                 max_results=max_results
             )
 
+        id = []
         created_at = []
         text = []
         retweet_count = []
@@ -101,6 +102,7 @@ class Integration:
         if isinstance(json_response, dict):
             for i in json_response["data"]:
                 author_id.append(i["author_id"])
+                id.append(i["id"])
                 created_at.append(i["created_at"])
                 text.append(i["text"])
                 retweet_count.append(i["public_metrics"]["retweet_count"])
@@ -113,6 +115,7 @@ class Integration:
                 )
 
         df = pd.DataFrame()
+        df["id"] = id
         df["author_id"] = author_id
         df["created_at"] = created_at
         df["Publiceringsdato"] = df["created_at"].str.split("T").str[0]
@@ -131,7 +134,12 @@ class Integration:
             + df["Bogmarkeringer"]
         )
 
-        return df
+        # return df
+        if type == "user":
+            self.user_tweet_table = df
+
+        if type == "mentions":
+            self.mentions_tweet_table = df
 
     def visualize_popularity(self, df):
         df["Publiceringsdato"] = df["Publiceringsdato"].astype(str)
@@ -185,10 +193,61 @@ class Integration:
 
         return fig
 
+    def _get_tweet_url(self, post_id):
+        return f"https://twitter.com/{self.username}/status/{post_id}"
+
+    def _get_posts_as_embeded(self, type) -> None:
+        """
+        Retrieves posts as embedded HTML from Twitter based on the given type.
+
+        To show in streamlit:
+            import streamlit.components.v1 as components
+            components.html(res, height=800)
+        """
+
+        if type == "user":
+            if self.user_tweet_table is not None:
+                ids = self.user_tweet_table["id"]
+
+                results = []
+                for id in ids:
+                    url = self._get_tweet_url(id)
+                    api = f"https://publish.twitter.com/oembed?url={url}"
+                    response = requests.get(api)
+                    results.append(response.json()["html"])
+
+                return results
+
 
 if __name__ == "__main__":
+    import streamlit as st
+    import streamlit.components.v1 as components
+
+    st.set_page_config(
+        page_title=None,
+        page_icon=None,
+        layout="wide",
+        initial_sidebar_state="auto",
+        menu_items=None,
+    )
+
     riri = Integration("rihanna")
+    riri.get_tweet_table(5, "user")
+    results = riri._get_posts_as_embeded(type="user")
 
-    table = riri.get_tweet_table(5, "user")
+    col1, col2, col3 = st.columns(3, gap="large")
 
-    print(table)
+    if results is not None:
+        with col1:
+            st.header("A cat")
+            components.html(results[0], height=800)
+
+        with col2:
+            st.header("A dog")
+            components.html(results[1], height=800)
+
+        with col3:
+            st.header("An owl")
+            components.html(results[2], height=800)
+
+    # riri.get_post_as_embeded()
