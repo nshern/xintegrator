@@ -205,9 +205,25 @@ class Integration:
             components.html(res, height=800)
         """
 
+        if type not in ["user", "mentions"]:
+            raise ValueError("Type needs to be 'user' or 'mentions'")
+
         if type == "user":
             if self.user_tweet_table is not None:
                 ids = self.user_tweet_table["id"]
+
+                results = []
+                for id in ids:
+                    url = self._get_tweet_url(id)
+                    api = f"https://publish.twitter.com/oembed?url={url}"
+                    response = requests.get(api)
+                    results.append(response.json()["html"])
+
+                return results
+
+        if type == "mentions":
+            if self.mentions_tweet_table is not None:
+                ids = self.mentions_tweet_table["id"]
 
                 results = []
                 for id in ids:
