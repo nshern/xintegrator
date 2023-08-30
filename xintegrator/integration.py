@@ -196,13 +196,17 @@ class Integration:
     def _get_tweet_url(self, post_id):
         return f"https://twitter.com/{self.username}/status/{post_id}"
 
-    def _get_posts_as_embeded(self, type) -> None:
+    # TODO: Remove '_' in front of function, as it should be called by user
+    def _get_posts_as_embeded(self, type, params=""):
         """
         Retrieves posts as embedded HTML from Twitter based on the given type.
 
         To show in streamlit:
             import streamlit.components.v1 as components
             components.html(res, height=800)
+
+        include params e.g.
+            params = {hide_media": "true", "hide_thread: "true"}
         """
 
         if type not in ["user", "mentions"]:
@@ -216,7 +220,7 @@ class Integration:
                 for id in ids:
                     url = self._get_tweet_url(id)
                     api = f"https://publish.twitter.com/oembed?url={url}"
-                    response = requests.get(api)
+                    response = requests.get(api, params=params)
                     results.append(response.json()["html"])
 
                 return results
@@ -229,7 +233,7 @@ class Integration:
                 for id in ids:
                     url = self._get_tweet_url(id)
                     api = f"https://publish.twitter.com/oembed?url={url}"
-                    response = requests.get(api)
+                    response = requests.get(api, params=params)
                     results.append(response.json()["html"])
 
                 return results
@@ -247,23 +251,28 @@ if __name__ == "__main__":
         menu_items=None,
     )
 
-    riri = Integration("rihanna")
+    riri = Integration("mfmorten")
     riri.get_tweet_table(5, "user")
-    results = riri._get_posts_as_embeded(type="user")
+    results = riri._get_posts_as_embeded(
+        type="user", params={"hide_media": "true", "hide_thread": "true"}
+    )
 
-    col1, col2, col3 = st.columns(3, gap="large")
+    # col1, col2, col3 = st.columns(3, gap="large")
 
-    if results is not None:
-        with col1:
-            st.header("A cat")
-            components.html(results[0], height=800)
+    for i in results:
+        components.html(i, height=500)
 
-        with col2:
-            st.header("A dog")
-            components.html(results[1], height=800)
+    # if results is not None:
+    #     with col1:
+    #         st.header("A cat")
+    #         components.html(results[0], height=800)
 
-        with col3:
-            st.header("An owl")
-            components.html(results[2], height=800)
+    #     with col2:
+    #         st.header("A dog")
+    #         components.html(results[1], height=800)
+
+    #     with col3:
+    #         st.header("An owl")
+    #         components.html(results[2], height=800)
 
     # riri.get_post_as_embeded()
