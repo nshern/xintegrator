@@ -197,7 +197,7 @@ class Integration:
         return f"https://twitter.com/{self.username}/status/{post_id}"
 
     # TODO: Remove '_' in front of function, as it should be called by user
-    def _get_posts_as_embeded(self, type, params=""):
+    def get_posts_as_embeded(self, type, params=""):
         """
         Retrieves posts as embedded HTML from Twitter based on the given type.
 
