@@ -12,6 +12,8 @@ class Integration:
         self.username = username
         self._bearer_token = os.environ.get("TWITTER_BEARER_TOKEN")
         self.user_id = self._get_id_from_username()
+        self.mentions_tweet_table = None
+        self.user_tweet_table = None
 
     def _bearer_oauth(self, r, user_agent):
         """
@@ -197,7 +199,7 @@ class Integration:
         return f"https://twitter.com/{self.username}/status/{post_id}"
 
     # TODO: Remove '_' in front of function, as it should be called by user
-    def get_posts_as_embeded(self, type, params=""):
+    def get_posts_as_embedded(self, type, params=""):
         """
         Retrieves posts as embedded HTML from Twitter based on the given type.
 
@@ -224,6 +226,11 @@ class Integration:
                     results.append(response.json()["html"])
 
                 return results
+            else:
+                raise AttributeError(
+                    f"{self.username} does not have a user_tweet_table"
+                    "attribute. Generate it before calling this function."
+                )
 
         if type == "mentions":
             if self.mentions_tweet_table is not None:
@@ -237,42 +244,8 @@ class Integration:
                     results.append(response.json()["html"])
 
                 return results
-
-
-if __name__ == "__main__":
-    import streamlit as st
-    import streamlit.components.v1 as components
-
-    st.set_page_config(
-        page_title=None,
-        page_icon=None,
-        layout="wide",
-        initial_sidebar_state="auto",
-        menu_items=None,
-    )
-
-    riri = Integration("mfmorten")
-    riri.get_tweet_table(5, "user")
-    results = riri._get_posts_as_embeded(
-        type="user", params={"hide_media": "true", "hide_thread": "true"}
-    )
-
-    # col1, col2, col3 = st.columns(3, gap="large")
-
-    for i in results:
-        components.html(i, height=500)
-
-    # if results is not None:
-    #     with col1:
-    #         st.header("A cat")
-    #         components.html(results[0], height=800)
-
-    #     with col2:
-    #         st.header("A dog")
-    #         components.html(results[1], height=800)
-
-    #     with col3:
-    #         st.header("An owl")
-    #         components.html(results[2], height=800)
-
-    # riri.get_post_as_embeded()
+            else:
+                raise AttributeError(
+                    f"{self.username} does not have a mentions_tweet_table"
+                    "attribute. Generate it before calling this function."
+                )
