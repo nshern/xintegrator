@@ -1,6 +1,7 @@
 import pytest
 from xintegrator import Integration
 import plotly
+from bs4 import BeautifulSoup
 
 
 @pytest.fixture
@@ -40,3 +41,10 @@ def test_visualization(rihanna):
 def test_get_tweet_table(rihanna):
     with pytest.raises(ValueError):
         rihanna.get_tweet_table(5, type="non_existant_type")
+
+
+def test_get_posts_as_embedded(rihanna):
+    rihanna.get_tweet_table(max_results=5, type="mentions")
+    posts = rihanna.get_posts_as_embedded("mentions")
+
+    assert "blockquote" in posts[0]
