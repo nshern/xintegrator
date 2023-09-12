@@ -210,7 +210,6 @@ class Integration:
         include params e.g.
             params = {hide_media": "true", "hide_thread: "true"}
         """
-
         if type not in ["user", "mentions"]:
             raise ValueError("Type needs to be 'user' or 'mentions'")
 
