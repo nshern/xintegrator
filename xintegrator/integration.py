@@ -136,6 +136,8 @@ class Integration:
             + df["Bogmarkeringer"]
         )
 
+        df["url"] = df["id"].apply(self._get_tweet_url)
+
         # return df
         if type == "user":
             self.user_tweet_table = df
@@ -195,7 +197,7 @@ class Integration:
 
         return fig
 
-    def get_tweet_url(self, post_id):
+    def _get_tweet_url(self, post_id):
         return f"https://twitter.com/{self.username}/status/{post_id}"
 
     # TODO: Remove '_' in front of function, as it should be called by user
