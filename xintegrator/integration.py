@@ -31,6 +31,7 @@ class Integration:
             auth=lambda r: self._bearer_oauth(r, user_agent),
             params=params,
         )
+
         if response.status_code != 200:
             raise Exception(
                 f"Request returned an error: {response.status_code}"
@@ -153,9 +154,9 @@ class Integration:
         fig.add_trace(
             go.Scatter(
                 x=df["Publiceringsdato"],  # date/time data for the x-axis
-                y=df["Popularitet"],  # polarity scores for the y-axis
+                y=df["Interaktion"],  # polarity scores for the y-axis
                 mode="markers",  # scatter plot
-                name="Popularitet",  # name of the trace
+                name="Interaktion",  # name of the trace
                 text=df.index,
                 hoverinfo="text",
                 marker=dict(
@@ -186,9 +187,9 @@ class Integration:
         )
 
         fig.update_layout(
-            title="Popularitet over tid",
+            title="Interaktion over tid",
             xaxis_title="Tid",
-            yaxis_title="Popularitet",
+            yaxis_title="Interaktion",
             # xaxis=dict(
             #     tickmode="linear",
             #     dtick="86400000",  # One day in milliseconds
