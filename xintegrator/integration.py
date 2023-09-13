@@ -154,7 +154,7 @@ class Integration:
         fig.add_trace(
             go.Scatter(
                 x=df["Publiceringsdato"],  # date/time data for the x-axis
-                y=df["Interaktion"],  # polarity scores for the y-axis
+                y=df["Popularitet"],  # polarity scores for the y-axis
                 mode="markers",  # scatter plot
                 name="Interaktion",  # name of the trace
                 text=df.index,
