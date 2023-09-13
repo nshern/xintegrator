@@ -195,7 +195,7 @@ class Integration:
 
         return fig
 
-    def _get_tweet_url(self, post_id):
+    def get_tweet_url(self, post_id):
         return f"https://twitter.com/{self.username}/status/{post_id}"
 
     # TODO: Remove '_' in front of function, as it should be called by user
