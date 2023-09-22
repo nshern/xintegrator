@@ -5,6 +5,11 @@ import plotly.graph_objects as go
 import numpy as np
 
 
+class TooManyRequestsError(Exception):
+    pass
+
+
+# This is a comment
 class Integration:
     def __init__(self, username):
         if not isinstance(username, str):
@@ -32,13 +37,10 @@ class Integration:
             params=params,
         )
 
-        if response.status_code != 200:
-            raise Exception(
-                f"Request returned an error: {response.status_code}"
-                f"{response.text}"
-            )
+        if response.status_code == 429:
+            raise TooManyRequestsError("Too many requests")
 
-        return response.json()
+        return response
 
     def _get_params(self, max_results):
         return {
@@ -50,7 +52,7 @@ class Integration:
         url = f"https://api.twitter.com/2/users/by?usernames={self.username}"
         json_response = self._connect_to_endpoint(
             url=url, user_agent="v2UserLookupPython", params=""
-        )
+        ).json()
 
         # TODO: Make some kind of try-except here,
         # TODO: to check if the user actually exists
@@ -64,7 +66,7 @@ class Integration:
         params = self._get_params(max_results)
         json_response = self._connect_to_endpoint(
             url=url, user_agent="v2UserTweetsPython", params=params
-        )
+        ).json()
 
         return json_response
 
@@ -74,7 +76,7 @@ class Integration:
         params = self._get_params(max_results)
         json_response = self._connect_to_endpoint(
             url=url, user_agent="v2UserMentionsPython", params=params
-        )
+        ).json()
 
         return json_response
 
