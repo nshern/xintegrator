@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xintegrator"
-version = "4.2.0"
+version = "4.3.0"
 description = "xintegrator is a Python wrapper for integrating with the X (formerly Twitter) api"
 authors = ["Niklas Alexander Shern <nshern@protonmail.com>"]
 readme = "README.md"
